@@ -3,12 +3,12 @@
 (C) 2012 g/christensen (gchristnsn@gmail.com)
 
 ### Yo dawg, we heard you like browsers, so we put a browser into your browser so
-    you can browse while you browse.
+you can browse while you browse.
 
 __Dark Matter__ is a prototype of a middleware intended to boost the paginated
-forum browsing (currently applicable only to imageboards), or it could be called
-an "imageboard aggregator" (a spin-off of the
-[feedxcavator](https://github.com/GChristensen/feedxcavator#readme) project).
+forum browsing (currently applicable only to imageboards, it could be called
+an "imageboard aggregator"), a spin-off of the
+[feedxcavator](https://github.com/GChristensen/feedxcavator#readme) project.
 
 Paginated forums (imageboards are the most ubiquity species nowadays) not so
 convenient to browse with bare hands, especialy highly loaded ones. The
@@ -47,8 +47,6 @@ The complete list of implemented concepts could be found in the
 * Unicode-enabled fonts
 * A [GAE](http://appspot.com) account or Java 1.6+ [could be run on a GAE 
   account (multiuser mode) or using the local GAE emulation (single user only)]
-
-#### Downloads
 
 ## License
 

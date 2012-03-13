@@ -1,8 +1,10 @@
 # Run `lein appeingine-prepare' first
 
 all:
+	mkdir shared
 	cp ../war/WEB-INF/lib/* ./shared
 	cp ../lib/dev/* ./shared
+	mkdir source
 	cp -R ../src/* ./source
 	cp -R ../war ./
 	cp ../firefox/dmbutton/dmbutton.xpi ./dmbutton-firefox.xpi
@@ -16,7 +18,8 @@ all:
 	mv ./lispx-gui.exe ./dm-browser.exe
 
 clean:
-	rm ./shared/*
-	rm -R ./source/*
+	rm -R ./shared
+	rm -R ./source
 	rm -R ./war
 	rm ./dm-browser*
+	rm *.xpi
