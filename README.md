@@ -2,8 +2,7 @@
 
 (C) 2012 g/christensen (gchristnsn@gmail.com)
 
-### Yo dawg, we heard you like browsers, so we put a browser into your browser so
-you can browse while you browse.
+### Yo dawg, we heard you like browsers, so we put a browser into your browser so you can browse while you browse.
 
 __Dark Matter__ is a prototype of a middleware intended to boost the paginated
 forum browsing (currently applicable only to imageboards, it could be called
