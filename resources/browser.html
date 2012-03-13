@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/common.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/dialog.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/tooltip.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/flatbutton.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/tab.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/tabbar.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/menu.css">
+  <link rel="stylesheet" type="text/css" href="js/goog/css/menuitem.css">
+  <link rel="stylesheet" type="text/css" href="js/goog/css/menuseparator.css">
+  <link rel="stylesheet" type="text/css" href="js/goog/css/submenu.css">
+
+  <link rel="stylesheet" type="text/css" href="css/main.css"/>
+  <link rel="stylesheet" type="text/css" href="css/browser.css"/>
+
+  <script type="text/javascript" src="js/goog/base.js"></script>
+  <script type="text/javascript" src="js/browser.js"></script>	
+  <script type="text/javascript" src="js/utils/utils.js"></script>	
+  <script type="text/javascript">
+	goog.require('browser');
+  </script>
+
+</head>
+
+<body>
+  <div id="header">
+	<div id="head-container">
+	  <div class="logo"></div>
+	  <h2 id="app-title">&nbsp;Dark Matter<sup class="beta">&nbsp;&#x03b2;&#x03ae;&#x03c4;&#x03b1;</sup></h2>
+	</div>
+	
+	<div id="address-bar">
+	  <label id="address-lbl">Address<sup>?</sup>:</label>
+	  <input id="address-txt" type="text" size="60"/>
+	  <div id="go-btn" title="Go" class="goog-flat-button"><span class="btn-text">&gt;</span></div>
+	  <div id="fav-btn" title="Favorites" class="goog-flat-button"><span class="btn-text">&#x2605;</span></div>
+	  <div id="settings-btn" title="Settings" class="goog-flat-button">
+		<span class="btn-text">&#x222b;</span>
+	  </div>
+	  <img id="loading" src="/images/empty.png"/>
+	  <span id="output"></span>
+	</div>
+  </div>
+
+  <div id="content">
+	<div id="tabs">
+	  <div id="thread-tabs"></div>
+      <div class="goog-tab-bar-clear"></div>
+      <div id="thread-tabs_content" class="goog-tab-content"></div>
+	</div>
+  </div>
+
+  <script id="init-script" type="text/javascript">
+	browser.main();
+  </script>
+
+</body>
+
+</html>

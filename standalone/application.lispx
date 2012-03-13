@@ -1,0 +1,3 @@
+(if (some #(= % "close") lispx/*argv*)
+  (.getContent (java.net.URL. "http://localhost:8095/stop"))
+  (load "start"))

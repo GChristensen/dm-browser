@@ -1,0 +1,32 @@
+<table id="thread-stream" cellpadding="0" cellspacing="0" border="0">
+  <tr class="thread-line">
+	<td class="watch-thread-control">
+	  <div class="control-buttons">
+		<input type="checkbox" class="thread-check"/>
+		<div class="service-pane-container">
+		  <p class="service-pane">
+			<p class="arc-rate" title="Archive rate">24h</p>
+			<a class="forget-trigger" onclick="browser.remove_thread(this)"  
+			   title="Remove thread">&#x00d7;</a>
+		  </p>
+		</div>
+	  </div>
+	</td>
+	<td class="watch-image-cell">
+	  <div class="watch-image-container">
+		<a class="image-link" target="_blank"><img class="watch-image" src=""/></a>
+	  </div>
+	</td>
+	<td class="thread-oppost watch-thread-oppost">
+	  <div class="thread-header watch-thread-header">
+		No.&nbsp;<a class="thread-no" target="_blank"></a>
+		&nbsp;<a class="inline-view-trigger" title="Inline view" 
+				 onclick="browser.inline_view_thread(this)">&#x274F;</a>
+		<a class="arc-menu" onclick="browser.arc_show_menu(this)" 
+		   title="Set archive rate">&#x231A;</a>
+		<span class="thread-title"></span>
+	  </div>
+	  <div class="oppost-text watch-oppost-text"></div>
+	</td>
+  </tr>
+</table>

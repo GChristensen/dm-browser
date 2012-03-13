@@ -1,0 +1,28 @@
+{
+    "name": "dmbutton",
+    "icon": "data/logo.png", 
+    "license": "MPL 1.1/GPL 2.0/LGPL 2.1", 
+    "author": "", 
+    "version": "0.1.1", 
+    "dependencies": [
+        "toolbarbutton"
+       ,"api-utils"
+       ,"addon-kit"
+    ], 
+    "fullName": "Dark Matter Button", 
+    "id": "jid1-gLZvFMDzTjSMqA", 
+    "description": "'Dark Matter' browser launch button",
+    "preferences": [
+    {
+        "name": "dmAddToToolbar",
+        "title": "Add to toolbar",
+        "type": "bool",
+        "value": true
+    }
+   ,{
+        "name": "dmBrowserLocation",
+        "title": "'Dark Matter' browser location (a URL or path to executable):",
+        "type": "string",
+        "value": ""
+    }]
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/cron/service-task</url>
+    <description>Service task</description>
+    <schedule>every day 00:00</schedule>
+  </cron>
+  <cron>
+    <url>/cron/arc-1h-task</url>
+    <description>Archive 1h task</description>
+    <schedule>every 1 hours</schedule>
+  </cron>
+</cronentries>

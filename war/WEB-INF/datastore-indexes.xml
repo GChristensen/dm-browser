@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="true">
+	<datastore-index kind="WatchItem" ancestor="false" source="manual">
+		<property name="user-token" direction="asc"/>
+		<property name="board" direction="asc"/>
+	</datastore-index> 
+	<datastore-index kind="ArcItem" ancestor="false" source="manual">
+		<property name="user-token" direction="asc"/>
+		<property name="board" direction="asc"/>
+	</datastore-index> 
+</datastore-indexes>

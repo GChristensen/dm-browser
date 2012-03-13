@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queue-entries>
+  <queue>
+    <name>page-fetcher</name>
+    <rate>20/s</rate>
+    <bucket-size>10</bucket-size>
+    <max-concurrent-requests>20</max-concurrent-requests>
+  </queue>
+  <queue>
+    <name>page-archiver</name>
+    <rate>20/s</rate>
+    <bucket-size>10</bucket-size>
+    <max-concurrent-requests>20</max-concurrent-requests>
+  </queue>
+</queue-entries>
