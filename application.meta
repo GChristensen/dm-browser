@@ -1,4 +1,4 @@
 (lispx-meta
   (application :name "\"Dark Matter\" Browser" :version "v0.1")
   (language :name clojure :classpath "%app-root%/source")
-  (actions ("Stop" "http://localhost:8095/stop") ("--" "")))
+  (actions ("Stop" "http://localhost:8095/stop") "--"))

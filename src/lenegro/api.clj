@@ -135,11 +135,9 @@ May return nil in case if this is not possible."
   "Performs platform-specific initialization."
   [handler]
   :gae [ (ifdef +standalone+
-                (let [argv (ns-resolve 'lispx '*argv*)]
+                (let [app-root (ns-resolve 'lispx '*app-root*)]
                   (ae/def-appengine-app lenegro-app handler
-                    :war-root (if (seq @argv)
-                                (str (first @argv) "war")
-                                "war")))
+                    :war-root (str @app-root "war")))
                 (ae/def-appengine-app lenegro-app handler)) ])
 
 ;; authentication ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
