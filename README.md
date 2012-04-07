@@ -4,24 +4,21 @@
 
 ### Yo dawg, we heard you like browsers, so we put a browser into your browser so you can browse while you browse.
 
-__Dark Matter__ is a prototype of a middleware intended to boost the paginated
-forum browsing (currently applicable only to imageboards, it could be called
-an "imageboard aggregator"), a spin-off of the
-[feedxcavator](https://github.com/GChristensen/feedxcavator#readme) project.
+__Dark Matter__, a spin-off of the
+[feedxcavator](https://github.com/GChristensen/feedxcavator#readme) project,
+is a prototype of a middleware for the boosted paginated
+forum browsing (currently applicable only to imageboards, although social news 
+sites such as reddit also could be considered as a sort of a paginated forum),
+it could be called an "imageboard aggregator".
 
-Paginated forums (imageboards are the most ubiquity species nowadays) not so
-convenient to browse with bare hands, especialy highly loaded ones. The
-straightforward logical step towards the browsing automatization is the
-aggregated browsing of such forums (disregarding the moral aspects of the
-browsing act) by batch-grabing the specified amount of the forum content and
-transforming it according the user requirements, so user can have a large picture
-of available data and could have some additional features which are not provided 
-by the forums themselves. 
+Paginated forums (imageboards are the most ubiquity species nowadays) are not so
+convenient to browse as is, especialy highly loaded ones. This application allows to
+batch-grab the specified amount of the forum content and
+transform it according to the user requirements, so user can have a large picture
+of the available data, transform the data and get some additional features which 
+are not provided by the forum software. 
 
-Due to regular structure of most imageboards, derived from a common ancestor,
-it's possible to write almost universal data extraction engine (which Lisp allows
-to do with ease) to cover wide range of imageboards, and the most interesting
-part: the user's requirements and transformations are expressed with a simple
+User's requirements and transformations are expressed with a simple
 query language embedded into URLs (a sort of a text command interface). It's also
 possible to build a simple indexed imageboard search engine on the base of this
 aggregator (which was done only as a proof of concept at the moment).
