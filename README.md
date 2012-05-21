@@ -51,8 +51,7 @@ The complete list of implemented concepts could be found in the
 
 * It's also possible to use an [App Engine](http://appspot.com) based or a standalone instance of 
   Dark Matter with any browser (through its default crossbrowser web client).
-  You need to know how to build and install Clojure applications to GAE to do this
-  to build and install the application from source.
+  You need to know how to build and install Clojure applications at GAE to build and install the application from source.
 
 * The [Darkmatter](https://github.com/downloads/GChristensen/dm-browser/darkmatter.xpi) firefox addon allows to add chan:// URLs support to an existing
   Firefox instance (it could be used with a standalone or GAE-based Dark Matter instance).
