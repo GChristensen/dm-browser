@@ -14,10 +14,11 @@
         [appengine-magic.services.url-fetch :only [fetch]]))
 
 (def +production+ true)
-(def +restricted+ nil)
+(def +restricted+ false)
 (def +standalone+ (boolean (find-ns 'lispx)))
 (def +carnival+ nil)
 (def +pristine+ nil)
+(def +public+ false)
 
 (defmacro ifdef [test expr1 expr2]
   (if (true? (eval test)) expr1 expr2))

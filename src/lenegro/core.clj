@@ -6,7 +6,7 @@
   (:use compojure.core))
 
 (defroutes lenegro-app-routes
-  (GET "/" request (browser/browser-route request false))
+  (GET "/" request (browser/browser-route request api/+public+))
   (GET "/public" request (browser/browser-route request true))
   (GET "/proxify/*" [url referer] (api/proxify url referer))
   (POST "/keepalive" [] (fn [& _] (api/text-page nil)))
@@ -14,11 +14,11 @@
   (POST "/lets-go" request (browser/go-route request))
   (POST "/refresh" request (browser/refresh-route request))
   (ANY "/tab/:url" {{:keys [url]} :route-params :as request}
-    (browser/tab-route url request))
+    (browser/tab-route url request api/+public+))
   (ANY "/tab/:url1/:url2" {{:keys [url1 url2]} :route-params :as request}
-    (browser/tab-route (str url1 "/" url2) request))
+    (browser/tab-route (str url1 "/" url2) request api/+public+))
   (ANY "/tab/:url1/:url2/:url3" {{:keys [url1 url2 url3]} :route-params :as request}
-    (browser/tab-route (str url1 "/" url2 "/" url3) request))
+    (browser/tab-route (str url1 "/" url2 "/" url3) request api/+public+))
   (ANY "/download-page-task" request (browser/download-page-task request))
   (ANY "/archive-page-task" request (browser/archive-page-task request))
   (POST "/get-scrap" request (browser/get-scrap-route request))
@@ -32,9 +32,9 @@
   (POST "/unwatch-threads" request (browser/unwatch-threads-route request))
   (ANY "/lazy-get-watch" request (browser/lazy-get-watch-route request))
   (ANY "/cron/service-task" [] (browser/service-task-route))
-  (POST "/callback/got-image" {{:strs [item-id]} :query-params :as request}
+  (ANY "/callback/got-image" {{:strs [item-id]} :query-params :as request}
         (browser/got-image-route item-id request))
-  (POST "/callback/got-page" request (browser/got-page-route request))
+  (ANY "/callback/got-page" request (browser/got-page-route request))
   (GET "/archive/:thread-id/:image-id"  {{:keys [thread-id image-id]} :route-params :as request}
        (browser/arc-serve-image thread-id image-id request))
   (GET "/archive/:thread-id"  {{:keys [thread-id]} :route-params :as request}
