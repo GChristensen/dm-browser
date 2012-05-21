@@ -13,10 +13,11 @@
   (:use clojure.tools.macro
         [appengine-magic.services.url-fetch :only [fetch]]))
 
+(def +production+ true)
 (def +restricted+ nil)
 (def +standalone+ (boolean (find-ns 'lispx)))
 (def +carnival+ nil)
-(def +pristine+ true)
+(def +pristine+ nil)
 
 (defmacro ifdef [test expr1 expr2]
   (if (true? (eval test)) expr1 expr2))
@@ -184,19 +185,22 @@ May return nil in case if this is not possible."
 (defn page-found [content-type body]
   {:status 200
    :headers {"Content-Type" content-type,
-             "Cache-Control" "no-cache"}
+             "Cache-Control" "no-cache"
+             "suck" "off"}
    :body body})
 
 (defn html-page [body]
   {:status 200
    :headers {"Content-Type" "text/html"
-             "Cache-Control" "no-cache"}
+             "Cache-Control" "no-cache"
+             "Access-Control-Allow-Origin" "*"}
    :body body})
 
 (defn text-page [body]
   {:status 200
    :headers {"Content-Type" "text/plain",
-             "Cache-Control" "no-cache"}
+             "Cache-Control" "no-cache"
+             "Access-Control-Allow-Origin" "*"}
    :body body})
 
 (defn redirect-to

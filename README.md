@@ -33,7 +33,7 @@ Key features:
 * It' possible to permanently pin threads of interest to the top of a thread 
   stream and monitor the posting dynamics
 * Ability to view the whole imageboard and its threads as image folders
-* Cron-based automatic thread archive
+* Cron-based automatic thread archive (may not work with a standalone instance)
 
 The complete list of implemented concepts could be found in the
 [manual](https://github.com/gchristensen/dm-browser/wiki/manual.png).
@@ -43,6 +43,18 @@ The complete list of implemented concepts could be found in the
 * Unicode-enabled fonts
 * A [GAE](http://appspot.com) account or Java 1.6+ [could be run on a GAE 
   account (multiuser mode) or using the local GAE emulation (single user only)]
+
+#### Usage
+
+* The easiest way is to install the [Dark Matter Suite](https://sites.google.com/site/dmbrowser/)
+  which includes a standalone Dark Matter server, Firefox browser and some useful addons and userscripts.
+
+* It's also possible to use an [App Engine](http://appspot.com) based or a standalone instance of 
+  Dark Matter with any browser through the its default crossbrowser web client.
+  You need to know how to build and install Clojure applications to GAE to do this.
+
+* The [Darkmatter]() firefox addon allows to add chan:// URL support to an existing
+  Firefox instance (it could be used with a standalone or GAE-based Dark Matter instance).
 
 ## License
 

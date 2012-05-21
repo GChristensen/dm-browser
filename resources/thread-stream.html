@@ -5,14 +5,14 @@
 	</tr>
 	<tr class="thread-line">
 	  <td class="thread-control">
-		<input type="checkbox" class="thread-check"/>&nbsp;<a class="expand-trigger" 
+		<!--input type="checkbox" class="thread-check"/-->&nbsp;<a class="expand-trigger" 
 															  title="Expand thread">&raquo;</a>
 		<div class="control-buttons">
 		  <p><a class="watch-trigger-disabled" onclick="browser.watch_thread(this)" 
-				title="Watch thread">&#x2329;<span class="italic">&#x03c9;</span>&#x232a;</a></p>
+				title="Watch thread">[~]</a></p>
 		  <div class="service-pane-container">
 			<p class="service-pane">
-			  <a class="forget-trigger" onclick="browser.forget_thread(this)"  
+			  <a class="forget-trigger" onclick="browser.forget_thread(this)"
 				 title="Forget thread">&#x00d7;</a>
 			</p>
 		  </div>
@@ -23,13 +23,13 @@
 		  <div class="thread-header" title="Expand thread">
 			<img class="ball"/>&nbsp;
 			No.&nbsp;<a class="thread-no reply-no" target="_blank"></a>
-			&nbsp;<a class="inline-view-trigger" title="Inline view" 
+			&nbsp;<a class="inline-view-trigger header-btn" title="Inline view" 
 					 onclick="browser.inline_view_thread(this)">&#x274F;</a>
-			<a class="delta-link" target="_blank" onclick="return browser.inline_view_reflink(this)" 
+			<a class="delta-link header-btn" target="_blank" onclick="return browser.inline_view_reflink(this)" 
 			   title="Inline view delta">&#x2206;</a>
-			<a class="iv-trigger-menu" onclick="browser.iv_show_menu(this)" 
+			<a class="iv-trigger-menu header-btn" onclick="browser.iv_show_menu(this)" 
 			   title="Integrated view">++</a>
-			<a class="iv-trigger" onclick="browser.iv_load_posts(this, 15)" 
+			<a class="iv-trigger header-btn" onclick="browser.iv_load_posts(this, 15)" 
 			   title="Integrated view (15)">+</a>
 			&nbsp;<span class="post-count" title="Post count"></span>
 			<span class="thread-title"></span>
@@ -47,7 +47,7 @@
 				<div class="reply-header">
 				  <img class="ball"/>&nbsp;
 				  No.&nbsp;<a class="reply-no" target="_blank"></a>
-				  &nbsp;<a class="inline-view-trigger" title="Inline view" 
+				  &nbsp;<a class="inline-view-trigger header-btn" title="Inline view" 
 						   onclick="browser.inline_view_thread(this)">&#x274F;</a>
 				  <span class="reply-ord"></span>
 				  &nbsp;<span class="reply-title"></span>
@@ -62,7 +62,7 @@
 				<div class="clear"/>
 			  </div>
 			</div>
-			<div class="collapse-bar"><a class="expand-trigger" title="Collapse thread">&#x2042;</a></div>
+			<div class="collapse-bar"><a class="expand-trigger" title="Collapse thread">Collapse</a></div>
 		  </div>
 		</div>
 		<img class="lazy-load-trigger" src="/images/empty.png" onload="browser.lazy_get_watch(this)"/>

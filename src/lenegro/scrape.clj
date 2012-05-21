@@ -18,7 +18,6 @@
 ;; 2chan.su
 ;; 0chan.ru
 ;; 2ch.so
-;; 2--ch.ru
 ;; 410chan.ru
 ;; 5channel.net
 ;; dobrochan.ru (limited support)
@@ -54,9 +53,11 @@
 (defn fix-url [url resource]
   (when url
     (cond
-     (= (get url 0) \/) (str (:scheme resource) (:domain resource) url)
-     (.startsWith url "http") url
-     :default (str (:target resource) "/" url))))
+      (= (get url 0) \/) (if (= (get url 1) \/)
+                           (str "http:" url)
+                           (str (:scheme resource) (:domain resource) url))
+      (.startsWith url "http") url
+      :default (str (:target resource) "/" url))))
 
 (defn fix-image [url resource]
   (if (:prox resource)
@@ -92,10 +93,6 @@
 
 (defmulti paginate trade-dispatch)
 
-(defmethod paginate "2--ch.ru" [n resource]
-  (str (:target resource) "/"
-       (str n "." (get-ext resource))))
-
 (defmethod paginate "4chan.org" [n resource]
   (str (:scheme resource) "boards.4chan.org/" (:board resource) "/"
        (when (not (zero? n)) n)))         
@@ -105,6 +102,16 @@
        (if (zero? n)
          (str "index." (get-ext resource))
          (str n "." (get-ext resource)))))
+
+(defmethod paginate "dobrochan.ru" [n resource]
+  (str (:target resource) "/"
+       (if (zero? n)
+         (str "index." (get-ext resource))
+         (str n "." (get-ext resource)))))
+
+(defmethod paginate "2--ch.ru" [n resource]
+  (str (:target resource) "/"
+       (str n "." (get-ext resource))))
 
 (defmethod paginate :default [n resource]
   (str (:target resource) "/"
@@ -304,7 +311,8 @@
              (let [all-replies (select root-node reply-sel)
                    omitted (+ (count all-replies)
                               (or (get-omitted (first (select root-node #{[:.omittedposts] [:.omittedinfo]
-                                                                          [:div.abbrev :> :span]})))
+                                                                          [:div.abbrev :> :span]
+                                                                          [:span.summary]})))
                                   1))
                    last-id (if (seq all-replies)
                              (get-thread-id (last all-replies) resource)
@@ -341,7 +349,7 @@
         (for [root-node threads]
           (when-let [oppost-node (cond
                                   (seq (select root-node [root :> [:div first-of-type] :>
-                                                          #{:blockquote :div.postbody}]))
+                                                          #{:blockquote :div.postbody :.mobile}]))
                                   (first (select root-node [root :> [:div first-of-type]]))
 
                                   (seq (select root-node [root :> :.op :> :.post]))
@@ -397,6 +405,23 @@
 
 (defmulti scrape-threads trade-dispatch)
 
+(defn scrape-post-4chan [root-node parent-id num resource]
+  (let [thread-id (get-thread-id root-node resource)
+        title-elt (first (select root-node [root :> :.post :> :.subject]))
+        date (str/trim (first (:content (first (select root-node [:.dateTime])))))
+        image-link (first (select root-node [:a.fileThumb]))
+        thumb-img  (first (select image-link [:img]))
+        filesize (first (select root-node [:.fileText]))
+        post-text (first (select root-node [root :> :.post :> :blockquote]))]
+    (make-headline thread-id parent-id num date title-elt thumb-img image-link filesize post-text
+                          resource)))
+
+(defmethod scrape-threads "4chan.org" [doc-tree resource]
+  (scrape-structured (select doc-tree [:div.board :> :div.thread])
+                     scrape-post-4chan
+                     [:.replyContainer]
+                     resource))
+
 (defn scrape-post-kraut [root-node parent-id num resource]
   (let [thread-id (get-thread-id root-node resource)
         ball-elt (first (select root-node [root :> :.postheader :> [:img (attr-contains :src "ball")]]))
@@ -419,6 +444,13 @@
                      [:.postreply]
                      resource))
 
+(defmethod scrape-threads "2--ch.ru" [doc-tree resource]
+  (scrape-structured (select doc-tree [root :> :body :> :form :>
+                                       [:div (attr-starts :id "t") (but (attr? :style))]])
+                     scrape-post-wkb
+                     [:table :.reply]
+                     resource))
+
 ;; (kareha) doesn't work now, invalid selectors
 (defn scrape-post-2channel [root-node parent-id resource]
   (let [thread-id (second (re-find #"/(\d+)/"
@@ -435,13 +467,6 @@
                                   [:.finalreplies :> :.reply]
                                   resource)]
     thread))
-
-(defmethod scrape-threads "2--ch.ru" [doc-tree resource]
-  (scrape-structured (select doc-tree [root :> :body :> :form :>
-                                       [:div (attr-starts :id "t") (but (attr? :style))]])
-                     scrape-post-wkb
-                     [:table :.reply]
-                     resource))
 
 (defmethod scrape-threads "7chan.org" [doc-tree resource]
   (scrape-structured (select doc-tree [:form :> [:div (attr-starts :id "thread")]])
@@ -468,8 +493,8 @@
       (make-image-headline nil (first (select filesz [:img])) (first (select filesz [:a])) filesz resource))))
   
 (defmethod scrape-thread-images :default [doc-tree resource]
-  (let [images (select doc-tree #{[:.filesize]
-                                  [[:* (but :.filesize)] :>
+  (let [images (select doc-tree #{[#{:.filesize :.fileinfo :.fileInfo}]
+                                  [[:* (but :.filesize) (but :.fileinfo) (but :.fileText)] :>
                                    [:a (attr? :target) (attr-contains :href "src/")]]})]
     (for [[filesz link] (partition 2 images)]
       (make-image-headline nil (first (select link [:img])) link filesz resource))))
@@ -480,8 +505,8 @@
            (for [root-node threads]
              (let [thread-id-elt (first (select root-node [[:input (attr= :type "checkbox")]]))
                    thread-id (get-thread-id thread-id-elt resource)
-                   images (select root-node #{[#{:.filesize :.fileinfo}]
-                                              [[:* (but :.filesize) (but :.fileinfo)] :>
+                   images (select root-node #{[#{:.filesize :.fileinfo :.fileInfo}]
+                                              [[:* (but :.filesize) (but :.fileinfo) (but :.fileText)] :>
                                                [:a (attr? :target) (attr-contains :href "src/")]]})]
                (for [[filesz link] (partition 2 images)]
                  (make-image-headline thread-id (first (select link [:img])) link filesz resource)))))))
@@ -517,7 +542,8 @@
 (defmethod scrape-images :default [doc-tree resource]
   (if (seq (select doc-tree [root :> :body :> :form :> :blockquote]))
     (scrape-images-flat doc-tree resource)
-    (scrape-images-struct doc-tree #{[:form#delform :> [:div (attr-starts :id "thread")]]
+    (scrape-images-struct doc-tree #{[:.board :> :.thread]
+                                     [:form#delform :> [:div (attr-starts :id "thread")]]
                                      [root :> :body :> :form :> [:div (attr-starts :id "thread")]]}
                           resource)))
 

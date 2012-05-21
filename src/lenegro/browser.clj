@@ -46,6 +46,8 @@
   (let [user-token (api/get-user-token)
         settings (get-settings user-token)]
     (at (html-resource (api/get-resource-as-stream "browser.html"))
+        [:.uncompiled-script]
+        #(when (not api/+production+) %)
         [:#settings-btn]
         #(when (not open) %)
         [:#init-script]
@@ -60,12 +62,32 @@
                                })
                       "')")))))
 
-(defn snapin-template [&{:keys [simple action message static]}]
+(defn tab-template [url open]
+  (let [user-token (api/get-user-token)
+        settings (get-settings user-token)]
+    (at (html-resource (api/get-resource-as-stream "tab.html"))
+        [:.uncompiled-script]
+        #(when (not api/+production+) %)
+        [:base]
+        (do->
+         (set-attr :href api/*app-host*)
+         (set-attr :url api/*app-host*))
+        [:#init-script]
+        (content (str "browser.main('"
+                      (pr-str {:local api/+standalone+
+                               :restricted api/+restricted+
+                               :start-page "favorite"
+                               :fav-start [(str url ":tab")]
+                               :open open
+                               :tab true
+                               })
+                      "')")))))
+
+(defn snapin-template [&{:keys [simple action message static tab]}]
   (at (html-resource (api/get-resource-as-stream "thread-snapin.html"))
       [:#forget-btn]
       #(when (not simple)
-         (if action ((content action) %)
-             %))
+         (when action ((content action) %)))
       [:#expand-btn]
       #(when (not (or simple action)) %)
       [:#expand-watch-btn]
@@ -74,6 +96,8 @@
       #(when (and (not static) (not action)) %)
       [:#refresh-btn]
       #(when (not static) %)
+      [:#close-btn]
+      #(when (not tab) %)
       [:#thread-headlines]
       (html-content-if message)))
 
@@ -88,7 +112,9 @@
 (defn image-stream-template [inline]
   (let [templ (html-resource (api/get-resource-as-stream "image-stream.html"))]
     (if inline
-      templ
+      (at templ
+          [:base]
+          (set-attr :href api/*app-host*))
       (select templ [:#image-stream]))))
 
 (defn flatten-markup [text]
@@ -416,7 +442,7 @@
                              (set-attr :class "watch-trigger-enabled")
                              (set-attr :title "Unwatch thread")
                              (set-attr :onwatch "onwatch")
-                             (html-content "&#x2329;<span class=\"italic\">&#x03c5;</span>&#x232a;"))
+                             (html-content "[&#x2012;]"))
                             node)
                            node))
                        [:.lazy-load-trigger]
@@ -563,7 +589,14 @@
      :deep (when (> (.indexOf url ":deep") 0) true) ; deep search
      :chain (when (> (.indexOf url ":chain") 0) true) ; chained query
      :first (when (> (.indexOf url ":first") 0) true) ; first query in chain
+     :tab (when (> (.indexOf url ":tab") 0) true) ; single tab view
      }))
+
+(defn get-settings-route []
+  (let [user-token (api/get-user-token)
+        settings (get-settings user-token)]
+    (api/text-page (pr-str {:fav-start (:fav-start settings)
+                            :start-page (:start-page settings)}))))
 
 (defn got-image-route [item-id request]
   (try
@@ -713,7 +746,6 @@
       (catch Throwable e
         #_(with-open [w (java.io.PrintStream. "error.txt")]
           (.println w (api/get-stacktrace e)))))
-          
       (api/text-page ""))
 
 (defn setup-tasks [task-id n-pages resource]
@@ -763,7 +795,10 @@
         "iichan.ru/rm" (api/text-page (make-err-resp "Access denied" resource))
         "iichan.ru/fr" (api/text-page (make-err-resp "Access denied" resource))
         
-        (let [response (api/fetch-url (scrape/paginate 0 resource) :method :head)]
+        (let [response (api/fetch-url (scrape/paginate 0 resource)
+                                      :method (if (= (:trade resource) "dobrochan.ru")
+                                                :get
+                                                :head))]
           (if (< (:response-code response) 400)
             (let [task-id (api/get-uuid)]
               (setup-tasks task-id (:pages resource) resource)
@@ -771,7 +806,8 @@
                                              :snapin
                                              (when (not (and (:chain resource) (not (:first resource))))
                                                (api/render (snapin-template :simple (:img resource)
-                                                                            :static (:chain resource))))})))
+                                                                            :static (:chain resource)
+                                                                            :tab (:tab resource))))})))
             (throw (Exception.)))))
        (catch Throwable e
           (api/text-page (make-err-resp "Page not found" resource))))))
@@ -788,6 +824,9 @@
       (let [task-id (api/get-uuid)]
         (setup-tasks task-id (:refresh resource) resource)
         (api/text-page (make-resp :ok {:resource resource :task task-id}))))))
+
+(defn tab-route [url request]
+    (api/html-page (api/render (tab-template url false))))
 
 (defn get-scrap-route [request]
   (let [task-id (slurp (:body request))]
@@ -820,7 +859,7 @@
             (api/cache-delete! semaphore-id)
             (api/cache-delete! resource-id)
             (api/text-page (make-resp :ok {:threads (format-headlines threads resource)
-                                           :stats stats}))))))))
+                                           :stats (assoc stats :nocheck true)}))))))))
 
 (defn get-thread-images-route [resource thread-id]
   (let [resource (read-string resource)]
@@ -911,9 +950,7 @@
                                              :post-count (:omitted thread)
                                              :replies replies-html})))
             (api/text-page (make-resp :error "Thread not found"))))
-        (when (= (:response-code content) 404)
-          (ds/delete! watch-item)
-          (api/text-page (make-resp :error "Thread not found (404)")))))
+        (api/text-page (make-resp :error "Thread not found"))))
     (catch Throwable e
       (api/text-page (make-resp :error "Thread not found")))))
 

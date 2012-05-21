@@ -9,9 +9,9 @@
   <link rel="stylesheet" type="text/css" href="css/main.css"/>
   <link rel="stylesheet" type="text/css" href="css/settings.css"/>
 
-  <script type="text/javascript" src="js/goog/base.js"></script>
+  <script type="text/javascript" class="uncompiled-script" src="js/goog/base.js"></script>
   <script type="text/javascript" src="js/settings.js"></script>	
-  <script type="text/javascript">
+  <script type="text/javascript" class="uncompiled-script">
 	goog.require('settings');
   </script>
 
@@ -57,7 +57,7 @@
 		<textarea id="favorites"/>
 	  </div>
 	  <div id="misc-container">
-		<span class="gold">Miscellaneous</span>
+		<span class="gold">Miscellaneous<sup>&nbsp;</sup></span>
 		<hr/>
 		<p>
 		Start page: 
@@ -69,7 +69,11 @@
 		</p>
 		<p>
 		  <input type="checkbox" id="force-textonly">Force text only</input><br/>
-		  <input type="checkbox" id="keepalive">Keepalive requests</input><br/>
+		  <input type="checkbox" id="keepalive" style="display: none;">
+            <span style="display: none;">Keepalive requests</span>
+          </input>
+          <br/>
+          <a href="javascript:if (parent) parent.window.location='/'; else window.location='/'">Crossbrowser client</a>
 		</p>
 	  </div>
 	  <div class="clear"/>

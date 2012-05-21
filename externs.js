@@ -2,6 +2,7 @@ var __alert = function() {};
 var __encodeURI = function() {};
 var __confirm = function() {};
 var __parseInt = function() {};
+var __base = {};
 
 var nav = {};
 nav.IE = {};

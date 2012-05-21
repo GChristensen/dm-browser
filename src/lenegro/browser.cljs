@@ -138,7 +138,7 @@
         filtered (:filtered stats)
         forgotten (:forgotten stats)
         hidden (+ filtered forgotten)]
-    (str (when (not (or (:chain resource) (:img resource)))
+    (str (when (not (or (:chain resource) (:img resource) (:nocheck stats)))
            "<input class=\"button-check\" id=\"mass-check\" type=\"checkbox\" 
            onclick=\"browser.check_threads(this.checked)\"/>&nbsp;")
          (if (string? stats)
@@ -299,6 +299,14 @@
 
 ;; thread control handlers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; (defn ^:export populate-buttons [target]
+;;   (let [expand-btns (dom/getElementsByClass "expand-thread-btn" (dom/getElement "thread-headlines"))]
+;;     (array/forEach expand-btns
+;;                    (fn [btn]
+;;                      (goog.ui/decorate btn)
+;;                      (set! (.-onclick btn)
+;;                            (.-onclick (.-parentNode btn)))))))
+
 (defn ^:export watch-thread [target]
   (assert-open)
   (let [tab (. thread-tabs (getSelectedTab))
@@ -324,8 +332,8 @@
                      (let [xhr (.-target e)
                            {:keys [status body]} (reader/read-string (. xhr (getResponseText)))]
                        (if (= status :ok)
-                         (do
-                           (set! (.-innerHTML target) "&#x2329;<span class=\"italic\">&#x03c9;</span>&#x232a;")
+                         (do                         ;"&#x2329;<span class=\"italic\">&#x03c9;</span>&#x232a;"
+                           (set! (.-innerHTML target) "[~]")
                            (set! (.-className target) "watch-trigger-disabled")
                            (set! (.-title target) "Watch thread")
                            (if (= (:trade (.-web_page_ tab)) "self.ref")
@@ -340,8 +348,8 @@
                      (let [xhr (.-target e)
                            {:keys [status body]} (reader/read-string (. xhr (getResponseText)))]
                        (if (= status :ok)
-                         (do
-                           (set! (.-innerHTML target) "&#x2329;<span class=\"italic\">&#x03c5;</span>&#x232a;")
+                         (do                         ;"&#x2329;<span class=\"italic\">&#x03c5;</span>&#x232a;"
+                           (set! (.-innerHTML target) "[&#x2012;]")
                            (set! (.-className target) "watch-trigger-enabled")
                            (set! (.-title target) "Unwatch thread")
                            (set! (.-innerHTML service-pane) (delta-posts 0))
@@ -574,13 +582,13 @@
 (defn ^:export expand-btn-handler [e]
   (let [expand-btn (dom/getElement "expand-btn")
         tab-page (dom/getElement "tab-page")
-        expand? (if (= (.-textContent expand-btn) "v") true false)]
-    (if (= (.-textContent expand-btn) "v")
+        expand? (if (= (.-textContent expand-btn) "Expand all") true false)]
+    (if (= (.-textContent expand-btn) "Expand all")
       (do
-        (set! (.-textContent expand-btn) "\u2303")
+        (set! (.-textContent expand-btn) "Collapse all")
         (set! (.-title expand-btn) "Collapse all threads"))
       (do
-        (set! (.-textContent expand-btn) "v")
+        (set! (.-textContent expand-btn) "Expand all")
         (set! (.-title expand-btn) "Expand all threads")))
     (array/forEach (dom/getElementsByClass "thread-oppost" tab-page)
                    #(expand-thread (.-id %) expand?))))
@@ -588,13 +596,13 @@
 (defn expand-watch-btn-handler [e]
   (let [expand-btn (dom/getElement "expand-watch-btn")
         tab-page (dom/getElement "tab-page")
-        expand? (if (= (.-textContent expand-btn) "w") true false)]
-    (if (= (.-textContent expand-btn) "w")
+        expand? (if (= (.-textContent expand-btn) "Expand wtch.") true false)]
+    (if (= (.-textContent expand-btn) "Expand wtch.")
       (do
-        (set! (.-textContent expand-btn) "\u2324")
+        (set! (.-textContent expand-btn) "Collapse wtch.")
         (set! (.-title expand-btn) "Collapse all watch items"))
       (do
-        (set! (.-textContent expand-btn) "w")
+        (set! (.-textContent expand-btn) "Expand wtch.")
         (set! (.-title expand-btn) "Expand all watch items")))
     (array/forEach (dom/getElementsByClass "onwatch" tab-page)
                     #(when (> (.-length (.-id %)) 0) (expand-thread (.-id %) expand?)))))
@@ -640,7 +648,7 @@
         expand-watch-btn (decorate-when root "expand-watch-btn")
         go-again-btn (decorate-when root "go-again-btn")
         refresh-btn (decorate-when root "refresh-btn")
-        close-btn (goog.ui/decorate (child-by-id root  "close-btn"))]
+        close-btn (decorate-when root "close-btn")]
     (when forget-btn
       (events/listen forget-btn
                      goog.ui.Component.EventType/ACTION
@@ -661,9 +669,10 @@
       (events/listen refresh-btn
                      goog.ui.Component.EventType/ACTION
                      refresh-btn-handler))
-    (events/listen close-btn
-                   goog.ui.Component.EventType/ACTION
-                   close-btn-handler)))
+    (when close-btn
+      (events/listen close-btn
+                     goog.ui.Component.EventType/ACTION
+                     close-btn-handler))))
 
 ;; data retirieval ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -674,11 +683,7 @@
         boards (vec (.split (aget match 2) ","))
         postfix (aget match 3)
         links (for [board boards]
-                       (str prefix
-                            (if  (> (.indexOf board ":") 0)
-                              (. board (trim))
-                              (str (. board (trim)) postfix))
-                            ":chain"))]
+                       (str prefix (str (. board (trim)) postfix) ":chain"))]
     (set! link-queue (next links))
     (post-data "/lets-go" (str (first links) ":first") go-btn-callback)))
 
@@ -834,12 +839,13 @@
 
 (defn ^:export main [init]
   (set! settings (reader/read-string init))
-  
-  (let [address-lbl (goog.ui.Tooltip. "address-lbl")]
-    (.setHtml address-lbl
-              (str "Enter a command or a forum address with colon-separated options,<br/>
+
+  (when (not (:tab settings))
+    (let [address-lbl (goog.ui.Tooltip. "address-lbl")]
+      (.setHtml address-lbl
+         (str "Enter a command or a forum address with colon-separated options,<br/>
                for example: <span style=\"color: #DDC771\">
-               example.com/foo:15p:5r:txt:rev</span><br/><br/>
+               4chan.org/a:15p:5r:rev</span><br/><br/>
                The options are (all the options are optional):<br/><br/>
                <span class=\"gold\">Np</span> - take N pages on the initial forum load (the default is 5) <br/>
                <span class=\"gold\">Nr</span> - take N pages on a refresh (the default is 2)<br/>
@@ -856,16 +862,16 @@
                <span class=\"gold\">search{text}</span> - show only threads containing the specified text
                                                           in the <br/>oppost title or message<br/>
                <span class=\"gold\">deep</span> - also search in visible posts
-               <br/></br>Chained links allow to view multiple boards in one tab,</br>
-               for example: <span class=\"gold\">example.com/[foo,bar:6p,baz]:3p</span>
+               <br/></br>Chained links allow to simultaneously view multiple boards in one tab,</br>
+               for example: <span class=\"gold\">4chan.org/[a:3p,c,m:2p]:5p</span>
                <br/></br>The commands are:<br/><br/>"
 
                (if  (:open settings)
-                 "<span class=\"gold\">sing!</span> - show some weird things"
-                 "<span class=\"gold\">watch</span> - open the watch list<br/>
-                 <span class=\"gold\">archive</span> - open the archive")
+                       "<span class=\"gold\">sing!</span> - show some weird things"
+                       "<span class=\"gold\">watch</span> - open the watch list<br/>
+                        <span class=\"gold\">archive</span> - open the archive")
                (when (:local settings)
-                 "<br/><span class=\"gold\">stop</span> - gracefully terminate the application</span>"))))
+                       "<br/><span class=\"gold\">stop</span> - gracefully terminate the application</span>")))))
   
   (set! thread-tabs (goog.ui.TabBar.))
   (.render thread-tabs (dom/getElement "thread-tabs"))
@@ -877,19 +883,20 @@
                  goog.ui.Component.EventType/SELECT
                  select-tab)
 
-  (let [fav-btn-div (dom/getElement "fav-btn")
-        fav-btn (goog.ui/decorate fav-btn-div)
-        popup (goog.ui.PopupMenu.)]
-    (set! favorites-menu popup)
-    (fill-favorites (:favorites settings))
-    (. popup (render))
-    (events/listen popup
-                   goog.ui.Component.EventType/ACTION
-                   favorites-menu-handler)
-    (events/listen fav-btn
-                   goog.ui.Component.EventType/ACTION
-                   (fn [e]
-                     (.showAtElement popup fav-btn-div goog.positioning.Corner/BOTTOM_START))))
+  (when (not (:tab settings))
+    (let [fav-btn-div (dom/getElement "fav-btn")
+          fav-btn (goog.ui/decorate fav-btn-div)
+          popup (goog.ui.PopupMenu.)]
+      (set! favorites-menu popup)
+      (fill-favorites (:favorites settings))
+      (. popup (render))
+      (events/listen popup
+                     goog.ui.Component.EventType/ACTION
+                     favorites-menu-handler)
+      (events/listen fav-btn
+                     goog.ui.Component.EventType/ACTION
+                     (fn [e]
+                       (.showAtElement popup fav-btn-div goog.positioning.Corner/BOTTOM_START)))))
 
   (when-let [s-btn (dom/getElement "settings-btn")]
     (let [s-btn (goog.ui/decorate s-btn)]
@@ -900,7 +907,7 @@
   (condp = (:start-page settings)
     "favorite" (when (:fav-start settings)
                  (doseq [fi (:fav-start settings)]
-                   (post-data "/lets-go" fi go-btn-callback) 500))
+                   (do-go fi)))
     "watch" (post-data "/lets-go" watch-page go-btn-callback)
     nil)
 
@@ -960,17 +967,18 @@
   (when (:keepalive settings)
     (js/setInterval #(post-data "/keepalive" nil nil) 60000))
 
-  (let [go-btn (goog.ui/decorate (dom/getElement "go-btn"))
-        address-txt (dom/getElement "address-txt")]
-    (. address-txt (focus))
-    (events/listen go-btn
-                   goog.ui.Component.EventType/ACTION
-                   go-btn-handler)
-    (events/listen address-txt
-                   goog.events.EventType/KEYPRESS
-                   (fn [e]
-                     (when (= (.-keyCode e) 13)
-                       (go-btn-handler e)))))
+  (when (not (:tab settings))
+    (let [go-btn (goog.ui/decorate (dom/getElement "go-btn"))
+          address-txt (dom/getElement "address-txt")]
+      (. address-txt (focus))
+      (events/listen go-btn
+                     goog.ui.Component.EventType/ACTION
+                     go-btn-handler)
+      (events/listen address-txt
+                     goog.events.EventType/KEYPRESS
+                     (fn [e]
+                       (when (= (.-keyCode e) 13)
+                         (go-btn-handler e))))))
 
   (when (.-IE js/nav)
     (show-output "<span class=\"red\">MSIE is barely supported, please get a real browser.</span>"))

@@ -1,0 +1,28 @@
+{
+    "name": "darkmatter",
+    "icon": "data/logo.png", 
+    "license": "MPL 1.1/GPL 2.0/LGPL 2.1", 
+    "author": "", 
+    "version": "0.1.0", 
+    "dependencies": [
+        "toolbarbutton"
+       ,"api-utils"
+       ,"addon-kit"
+    ],
+    "fullName": "Dark Matter", 
+    "id": "dark-matter-browser", 
+    "description": "Adds support for chan:// URLs used by the 'Dark Matter' imageboard browser.",
+    "preferences": [
+    {
+        "name": "dmAddToToolbar",
+        "title": "Add to toolbar",
+        "type": "bool",
+        "value": false
+    }
+   ,{
+        "name": "dmBrowserLocation",
+        "title": "'Dark Matter' browser location:",
+        "type": "string",
+        "value": ""
+    }]
+}

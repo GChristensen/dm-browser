@@ -16,10 +16,10 @@
   <link rel="stylesheet" type="text/css" href="css/main.css"/>
   <link rel="stylesheet" type="text/css" href="css/browser.css"/>
 
-  <script type="text/javascript" src="js/goog/base.js"></script>
+  <script type="text/javascript" class="uncompiled-script" src="js/goog/base.js"></script>
   <script type="text/javascript" src="js/browser.js"></script>	
   <script type="text/javascript" src="js/utils/utils.js"></script>	
-  <script type="text/javascript">
+  <script type="text/javascript" class="uncompiled-script">
 	goog.require('browser');
   </script>
 
@@ -35,10 +35,10 @@
 	<div id="address-bar">
 	  <label id="address-lbl">Address<sup>?</sup>:</label>
 	  <input id="address-txt" type="text" size="60"/>
-	  <div id="go-btn" title="Go" class="goog-flat-button"><span class="btn-text">&gt;</span></div>
-	  <div id="fav-btn" title="Favorites" class="goog-flat-button"><span class="btn-text">&#x2605;</span></div>
-	  <div id="settings-btn" title="Settings" class="goog-flat-button">
-		<span class="btn-text">&#x222b;</span>
+	  <div id="go-btn" title="Go" class="bar-btn goog-flat-button"><img src="/images/go.png"/></div>
+	  <div id="fav-btn" title="Favorites" class="bar-btn goog-flat-button"><img src="/images/fav.png"/></div>
+	  <div id="settings-btn" title="Settings" class="bar-btn goog-flat-button">
+		<img src="/images/settings.png"/>
 	  </div>
 	  <img id="loading" src="/images/empty.png"/>
 	  <span id="output"></span>

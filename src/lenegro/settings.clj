@@ -16,6 +16,8 @@
 (defn settings-template []
   (let [settings (browser/get-settings (api/get-user-token))]
     (at (html-resource (api/get-resource-as-stream "settings.html"))
+        [:.uncompiled-script]
+        #(when (not api/+production+) %)
         [:#watch-first]
         (set-checked (:watch-first settings))
         [:#always-calc-delta]

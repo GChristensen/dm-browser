@@ -13,6 +13,12 @@
   (GET "/settings" [] (settings/settings-route))
   (POST "/lets-go" request (browser/go-route request))
   (POST "/refresh" request (browser/refresh-route request))
+  (ANY "/tab/:url" {{:keys [url]} :route-params :as request}
+    (browser/tab-route url request))
+  (ANY "/tab/:url1/:url2" {{:keys [url1 url2]} :route-params :as request}
+    (browser/tab-route (str url1 "/" url2) request))
+  (ANY "/tab/:url1/:url2/:url3" {{:keys [url1 url2 url3]} :route-params :as request}
+    (browser/tab-route (str url1 "/" url2 "/" url3) request))
   (ANY "/download-page-task" request (browser/download-page-task request))
   (ANY "/archive-page-task" request (browser/archive-page-task request))
   (POST "/get-scrap" request (browser/get-scrap-route request))
@@ -24,7 +30,7 @@
   (POST "/forget" request (browser/forget-route request))
   (POST "/watch-thread" request (browser/watch-thread-route request))
   (POST "/unwatch-threads" request (browser/unwatch-threads-route request))
-  (POST "/lazy-get-watch" request (browser/lazy-get-watch-route request))
+  (ANY "/lazy-get-watch" request (browser/lazy-get-watch-route request))
   (ANY "/cron/service-task" [] (browser/service-task-route))
   (POST "/callback/got-image" {{:strs [item-id]} :query-params :as request}
         (browser/got-image-route item-id request))
@@ -37,8 +43,10 @@
   (POST "/set-arc-rate" request (browser/set-arc-rate request))
   (ANY "/cron/arc-1h-task" [] (browser/arc-1h-task-route))
   (ANY "/stop" [] (browser/go-route {:body (.getBytes "self.ref/stop")}))
+  (POST "/get-settings" [] (browser/get-settings-route))
   (ANY "/get-visitors" [] (browser/get-visitors-route))
   (ANY "/del-stats" [] (browser/del-stats-route))
+  (ANY "/ping" [] (api/text-page "pong"))
   (ANY "*" [] (api/page-not-found)))
 
 (defn context-binder [handler]

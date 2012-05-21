@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base id="doc-base" href="" url=""/>
+  <link rel="icon" type="image/icon" href="/favicon.ico">
+  <link rel="stylesheet" type="text/css" href="js/goog/css/common.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/dialog.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/tooltip.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/flatbutton.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/tab.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/tabbar.css"/>
+  <link rel="stylesheet" type="text/css" href="js/goog/css/menu.css">
+  <link rel="stylesheet" type="text/css" href="js/goog/css/menuitem.css">
+  <link rel="stylesheet" type="text/css" href="js/goog/css/menuseparator.css">
+  <link rel="stylesheet" type="text/css" href="js/goog/css/submenu.css">
+
+  <link rel="stylesheet" type="text/css" href="css/main.css"/>
+  <link rel="stylesheet" type="text/css" href="css/browser.css"/>
+
+  <script type="text/javascript" class="uncompiled-script" src="js/goog/base.js"></script>
+  <script type="text/javascript" src="js/browser.js"></script>	
+  <script type="text/javascript" src="js/utils/utils.js"></script>	
+  <script type="text/javascript">
+    var user_agent = __ua.toLowerCase();
+    var isMobile = (user_agent.indexOf("android") > -1 || user_agent.indexOf("ipad") > -1);
+    if(isMobile) 
+    {
+      loadjscssfile("/css/mobile.css", "css");
+    }
+  </script>
+
+  <script type="text/javascript" class="uncompiled-script">
+    goog.require('browser');
+  </script>
+
+</head>
+
+<body>
+  <div id="header">
+	<div id="head-container" class="tab-app-title">
+	  <img class="logo" src="images/logo.png"/>
+	  <h2 id="app-title" style="float: left; margin-left: 0;"
+          class="tab-app-title">&nbsp;Dark Matter<sup
+                                                   class="beta">&nbsp;&#x03b2;&#x03ae;&#x03c4;&#x03b1;</sup></h2>
+	  <div id="settings-btn" title="Settings" class="bar-btn goog-flat-button" style="margin-top: 12px;">
+		<img src="images/settings-t.png"/>
+	  </div>
+      <span id="loading" />
+	</div>
+  </div>
+
+  <div id="content" class="tab-content">
+	<div id="tabs">
+	  <div id="thread-tabs"></div>
+      <div class="goog-tab-bar-clear"></div>
+      <div id="thread-tabs_content" class="tab-thread-tabs_content goog-tab-content"></div>
+	</div>
+  </div>
+
+  <script id="init-script" type="text/javascript">
+	browser.main();
+  </script>
+
+</body>
+
+</html>

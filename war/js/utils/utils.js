@@ -19,17 +19,43 @@ function __parseInt(str)
 	return parseInt(str);
 }
 
+function loadjscssfile(filename, filetype)
+{
+ if (filetype=="js"){ //if filename is a external JavaScript file
+  var fileref=document.createElement('script')
+  fileref.setAttribute("type","text/javascript")
+  fileref.setAttribute("src",filename)
+ }
+ else if (filetype=="css"){ //if filename is an external CSS file
+  var fileref=document.createElement("link")
+  fileref.setAttribute("rel", "stylesheet")
+  fileref.setAttribute("type", "text/css")
+  fileref.setAttribute("href",filename)
+ }
+ if (typeof fileref!="undefined")
+  document.getElementsByTagName("head")[0].appendChild(fileref)
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // some utils extracted from https://github.com/SthephanShinkufag/Dollchan-Extension-Tools
 
-var __ua = window.navigator.userAgent;
-var nav = {
+var __ua = null;
+var nav = null;
+var doc = document; 
+
+function init()
+{
+    __ua = window.navigator.userAgent;
+    nav = {
 		Firefox: /firefox|minefield|icecat/i.test(__ua),
 		Opera: /opera/i.test(__ua),
 		Chrome: /chrome/i.test(__ua),
         IE: /MSIE/i.test(__ua)
 	};
-var doc = document;
+    doc = document;
+}
+
+init();
 
 /*=============================================================================
 									UTILS
@@ -265,6 +291,12 @@ function resizeImg(e) {
 }
 
 function expand_img(a, fullW, fullH) {
+
+    if (!nav)
+    {
+        init();
+    }
+
 	var full = __x('.//img[@id="_fullimg"]', a);
 
 	if(full) {
@@ -275,12 +307,14 @@ function expand_img(a, fullW, fullH) {
 	full = __new('img');
 
 	__del(__id('_fullimg'));
-	full.addEventListener(nav.Opera || nav.Chrome ? 'mousewheel' : 'DOMMouseScroll',
-		resizeImg, false
-	);
+
+    if (nav)
+	    full.addEventListener(nav.Opera || nav.Chrome ? 'mousewheel' : 'DOMMouseScroll',
+		                      resizeImg, false
+	                         );
 	makeMoveable(full);
 
-	var scrW = doc.body.clientWidth, scrH = window.innerHeight;
+	var scrW = document.body.clientWidth, scrH = window.innerHeight;
 
 	var newW = fullW < scrW ? fullW : scrW;
 	var newH = newW*fullH/fullW;
@@ -292,5 +326,6 @@ function expand_img(a, fullW, fullH) {
 			' position:fixed; z-index:5000; border:1px solid black; left:'
 			+ parseInt((scrW - newW)/2) + 'px; top:' + parseInt((scrH - newH)/2) + 'px' )
 	}));
+;
 	return false;
 }
