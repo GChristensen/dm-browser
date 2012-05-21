@@ -38,7 +38,7 @@ Key features:
 The complete list of implemented concepts could be found in the
 [manual](https://github.com/gchristensen/dm-browser/wiki/manual.png).
 
-#### Requirements:
+#### Requirements
 
 * Unicode-enabled fonts
 * A [GAE](http://appspot.com) account or Java 1.6+ [could be run on a GAE 
@@ -53,7 +53,7 @@ The complete list of implemented concepts could be found in the
   Dark Matter with any browser through the its default crossbrowser web client.
   You need to know how to build and install Clojure applications to GAE to do this.
 
-* The [Darkmatter]() firefox addon allows to add chan:// URL support to an existing
+* The [Darkmatter](https://github.com/downloads/GChristensen/dm-browser/darkmatter.xpi) firefox addon allows to add chan:// URL support to an existing
   Firefox instance (it could be used with a standalone or GAE-based Dark Matter instance).
 
 ## License
