@@ -24,5 +24,11 @@
         "title": "'Dark Matter' browser location:",
         "type": "string",
         "value": ""
+    }
+   ,{
+        "name": "dmRedirect",
+        "title": "Redirect",
+        "type": "bool",
+        "value": "false"
     }]
 }

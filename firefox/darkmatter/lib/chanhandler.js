@@ -2,7 +2,7 @@
   var prefs = require("simple-prefs");
 
   var loc = prefs.prefs.dmBrowserLocation;
-  localLaunch = false;
+  var redirect = prefs.prefs.dmRedirect;
 
   prefs.on("dmBrowserLocation", function (prefName) 
   {
@@ -50,6 +50,9 @@
             }
 
             var channel = ios.newChannelFromURI(uri, null).QueryInterface(Ci.nsIHttpChannel);
+            if (redirect)
+              channel.setRequestHeader("X-Moz-Is-Feed", "1", false);
+
             return channel;
         }
     })

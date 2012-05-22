@@ -825,8 +825,8 @@
         (setup-tasks task-id (:refresh resource) resource)
         (api/text-page (make-resp :ok {:resource resource :task task-id}))))))
 
-(defn tab-route [url request]
-    (api/html-page (api/render (tab-template url false))))
+(defn tab-route [url request open]
+    (api/html-page (api/render (tab-template url open))))
 
 (defn get-scrap-route [request]
   (let [task-id (slurp (:body request))]
