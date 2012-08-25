@@ -122,13 +122,13 @@ img#loading
 	bottom: 8px;
 }
 
-@-moz-document url-prefix()
+/*@-moz-document url-prefix()
 {
     #thread-tabs_content
     {
 	    top: 33px;
     }
-}
+}*/
 
 .tab-thread-tabs_content
 {

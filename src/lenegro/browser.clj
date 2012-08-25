@@ -83,6 +83,21 @@
                                })
                       "')")))))
 
+(defn mobile-template []
+    (let [user-token (api/get-user-token)
+        settings (get-settings user-token)]
+    (at (html-resource (api/get-resource-as-stream "mobile.html"))
+        [:.uncompiled-script]
+        #(when (not api/+production+) %)
+        [:#init-script]
+        (content (str "mobile.main('"
+                      (pr-str {:favorites (:favorites-parsed  settings)
+                               :local api/+standalone+
+                               :restricted api/+restricted+
+                               :mobile true
+                               })
+                      "')")))))
+
 (defn snapin-template [&{:keys [simple action message static tab]}]
   (at (html-resource (api/get-resource-as-stream "thread-snapin.html"))
       [:#forget-btn]
@@ -558,7 +573,7 @@
 (defn make-resource [url]
   (let [url (if (contains? all-commands (str/trim url))
               (str "self.ref/" url)
-              url)
+              (str/replace url "iichan.ru" "iichan.hk"))
         addr (re-find #"(https?\://)?(([^/]+)/([a-zA-Z0-9]+))" (api/sanitize url))
         trade (if addr (re-find #"[^.]+\.[^.]+$" (get addr 3)) url)
         pages (get (re-find #":(\d+)p" url) 1)
@@ -826,7 +841,10 @@
         (api/text-page (make-resp :ok {:resource resource :task task-id}))))))
 
 (defn tab-route [url request open]
-    (api/html-page (api/render (tab-template url open))))
+  (api/html-page (api/render (tab-template url open))))
+
+(defn mobile-route []
+  (api/html-page (api/render (mobile-template))))
 
 (defn get-scrap-route [request]
   (let [task-id (slurp (:body request))]

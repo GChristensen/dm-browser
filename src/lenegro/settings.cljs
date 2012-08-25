@@ -63,7 +63,7 @@
                    goog.ui.Component.EventType/ACTION
                    #(post-data "/remember-threads" nil nil))
     (.setHtml (goog.ui.Tooltip. (dom/getElement "remember-btn"))
-              "A month old forgotten threads are restored automatically."))
+              "A month old forgotten threads restore automatically."))
   
   (let [save-btn (goog.ui/decorate (dom/getElement "save-settings-btn"))]
     (events/listen save-btn

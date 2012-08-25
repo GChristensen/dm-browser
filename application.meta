@@ -1,5 +1,5 @@
 (lispx-meta
-  (application :name "Dark Matter" :version "v0.1"
+  (application :name "Dark Matter" :version "v0.2"
                :author "The New Kinetic Technologies")
   (language :name clojure :classpath "%app-root%/source")
   (actions ("Stop" "http://localhost:28095/stop") 

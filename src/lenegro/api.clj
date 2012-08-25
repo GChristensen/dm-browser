@@ -220,7 +220,9 @@ May return nil in case if this is not possible."
   (if +restricted+
     (page-not-found)
     (let [response (fetch-url (base64dec url) :headers {"Referer" (base64dec referer)})]
-      (page-found ((:headers response) "Content-Type") (:content response)))))
+      (page-found (or ((:headers response) "Content-Type")
+                       ((:headers response) "content-type"))
+                   (:content response)))))
 
 ;; misk ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

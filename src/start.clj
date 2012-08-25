@@ -5,5 +5,5 @@
 
 (gae/start api/lenegro-app :port 28095)
                                         
-(when (not (some #(= % "no  t-interactive") lispx/*argv*))
+(when (not (some #(= % "not-interactive") lispx/*argv*))
   (.browse (java.awt.Desktop/getDesktop) (java.net.URI. "http://localhost:28095")))

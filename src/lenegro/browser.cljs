@@ -148,7 +148,9 @@
                 (if (:img resource) "images" "threads")
                 " [displayed: " shown (when (> additional 0) (str "+" additional))
                 (when (> hidden 0)
-                  (str ", hidden: " hidden " [filtered: " filtered ", forgotten: " forgotten "]"))
+                  (str ", hidden: " hidden
+                       (when (not :mobile settings)
+                         (str " [filtered: " filtered ", forgotten: " forgotten "]"))))
                 "]")))))
 
 (defn inline-dialog [title target]
@@ -520,7 +522,10 @@
   (if (:open settings)
     (.addChild favorites-menu (goog.ui.MenuItem. "About Dark Matter") true)
     (do (.addChild favorites-menu (goog.ui.MenuItem. "Watch") true)
-        (.addChild favorites-menu (goog.ui.MenuItem. "Archive") true)))
+        (.addChild favorites-menu (goog.ui.MenuItem. "Archive") true)
+        (.addChild favorites-menu (goog.ui.MenuItem. "Mobile") true)
+        (when (:restricted settings)
+          (.addChild favorites-menu (goog.ui.MenuItem. "About Dark Matter") true))))
   (.addChild favorites-menu (goog.ui.MenuSeparator.) true)
   (doseq [fi favorites]
     (when (and fi (not= fi ""))
@@ -540,9 +545,10 @@
         caption (. item (getCaption))]
     (show-loading true)
     (condp = caption
-      "About Dark Matter" (set! (.-location js/window) "https://github.com/dm-browser/dm-browser#readme")
+      "About Dark Matter" (set! (.-location js/window) "http://sites.google.com/site/dmbrowser/")
       "Watch" (post-data "/lets-go" watch-page go-btn-callback)
       "Archive" (post-data "/lets-go" "self.ref/archive" go-btn-callback)
+      "Mobile" (set! (.-location js/window) "/m")
       (do-go caption))))
 
 ;; tab handlers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -577,6 +583,13 @@
         content (dom/getElement "thread-tabs_content")]
     (when (not (.-error_ tab))
       (show-loading-in content true)
+
+      (set! (.-innerHTML (child-by-id (.-tab_page_ tab) "thread-list-caption"))
+            (str "Processing " (:refresh (.-web_page_ tab))
+                 (if (not= (:refresh (.-web_page_ tab)) 1)
+                   " pages..."
+                   " page...")))
+
       (post-data "/refresh" (pr-str (.-web_page_ tab)) refresh-btn-callback))))
 
 (defn ^:export expand-btn-handler [e]
@@ -613,6 +626,13 @@
         content (dom/getElement "thread-tabs_content")]
     (when (not (.-error_ tab))
       (show-loading-in content true)
+
+      (set! (.-innerHTML (child-by-id (.-tab_page_ tab) "thread-list-caption"))
+            (str "Processing " (:pages (.-web_page_ tab))
+                 (if (not= (:pages (.-web_page_ tab)) 1)
+                   " pages..."
+                   " page...")))
+      
       (post-data "/refresh" (pr-str (assoc resource :refresh (:pages resource)))
                  refresh-btn-callback))))
     
@@ -788,6 +808,13 @@
         tab-title (if (:chain resource)
                     (str (:trade resource) "*")
                     tab-title)]
+
+    (when (not= status :error)
+      (set! (.-innerHTML (child-by-id tab-page "thread-list-caption"))
+            (str "Processing " (:pages resource)
+                 (if (not= (:pages resource) 1)
+                   " pages..."
+                   " page..."))))                   
     
     (when (= (.-content_ first-tab) blank-tab-lbl)
       (.removeChild thread-tabs first-tab true))

@@ -29,6 +29,6 @@
         "name": "dmRedirect",
         "title": "Redirect",
         "type": "bool",
-        "value": "false"
+        "value": false
     }]
 }

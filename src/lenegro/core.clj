@@ -1,5 +1,6 @@
 (ns lenegro.core
-  (:require [lenegro.api :as api]
+  (:require [clojure.string :as str]
+            [lenegro.api :as api]
             [lenegro.browser :as browser]
             [lenegro.settings :as settings]
             [compojure.handler :as handler])
@@ -14,11 +15,21 @@
   (POST "/lets-go" request (browser/go-route request))
   (POST "/refresh" request (browser/refresh-route request))
   (ANY "/tab/:url" {{:keys [url]} :route-params :as request}
-    (browser/tab-route url request api/+public+))
+       (browser/tab-route url request api/+public+))
   (ANY "/tab/:url1/:url2" {{:keys [url1 url2]} :route-params :as request}
-    (browser/tab-route (str url1 "/" url2) request api/+public+))
+       (browser/tab-route (str url1 "/" url2) request api/+public+))
   (ANY "/tab/:url1/:url2/:url3" {{:keys [url1 url2 url3]} :route-params :as request}
-    (browser/tab-route (str url1 "/" url2 "/" url3) request api/+public+))
+       (browser/tab-route (str url1 "/" url2 "/" url3) request api/+public+))
+  (ANY "/m/:url" {{:keys [url]} :route-params :as request}
+       (browser/tab-route url request api/+public+))
+  (ANY "/m/:url1/:url2" {{:keys [url1 url2]} :route-params :as request}
+    (browser/tab-route (str url1 "/" url2) request api/+public+))
+  (ANY "/m/:url1/:url2/:url3" {{:keys [url1 url2 url3]} :route-params :as request}
+       (browser/tab-route (str url1 "/" url2 "/" url3) request api/+public+))
+  (ANY "/m" []
+       (browser/mobile-route))
+  (ANY "/m/" []
+       (api/redirect-to "/m"))
   (ANY "/download-page-task" request (browser/download-page-task request))
   (ANY "/archive-page-task" request (browser/archive-page-task request))
   (POST "/get-scrap" request (browser/get-scrap-route request))

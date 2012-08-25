@@ -1,4 +1,4 @@
-(defproject lenegro "0.1.0"
+(defproject lenegro "0.2.0"
   :description ""
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.clojure/tools.macro "0.1.1"]

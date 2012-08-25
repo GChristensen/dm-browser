@@ -71,6 +71,11 @@ input[type="text"]
 	color: red;
 }
 
+.black
+{
+    color: black;
+}
+
 .italic
 {
 	font-style: italic;
@@ -104,4 +109,9 @@ input[type="text"]
 .unconstrained
 {
 	overflow: auto;
+}
+
+.align-right
+{
+    text-align: right;
 }

@@ -34,6 +34,7 @@ Key features:
   stream and monitor the posting dynamics
 * Ability to view the whole imageboard and its threads as image folders
 * Cron-based automatic thread archive (may not work with a standalone instance)
+* Mobile view (available through the `/m' page)
 
 The complete list of implemented concepts could be found in the
 [manual](https://github.com/gchristensen/dm-browser/wiki/manual.png).
@@ -41,7 +42,7 @@ The complete list of implemented concepts could be found in the
 #### Requirements
 
 * Unicode-enabled fonts
-* A [GAE](http://appspot.com) account or Java 1.6+ [could be run on a GAE 
+* A [GAE](http://appspot.com) account or Java 1.6+ [the application could be run on a GAE 
   account (multiuser mode) or using the local GAE emulation (single user only)]
 
 #### Usage
@@ -51,7 +52,7 @@ The complete list of implemented concepts could be found in the
 
 * It's also possible to use an [App Engine](http://appspot.com) based or a standalone instance of 
   Dark Matter with any browser (through its default crossbrowser web client).
-  You need to know how to build and install Clojure applications at GAE to build and install the application from source 
+  You need to know how to install applications at GAE to build and install the application from source 
   (a precompiled war folder for GAE is also [exists](http://dl.dropbox.com/u/47797347/dark-matter-gae-war.7z)).
 
 * The [Darkmatter](https://github.com/downloads/GChristensen/dm-browser/darkmatter.xpi) firefox addon allows to add chan:// URLs support to an existing
