@@ -23,7 +23,7 @@
   (ANY "/m/:url" {{:keys [url]} :route-params :as request}
        (browser/tab-route url request api/+public+))
   (ANY "/m/:url1/:url2" {{:keys [url1 url2]} :route-params :as request}
-    (browser/tab-route (str url1 "/" url2) request api/+public+))
+       (browser/tab-route (str url1 "/" url2) request api/+public+))
   (ANY "/m/:url1/:url2/:url3" {{:keys [url1 url2 url3]} :route-params :as request}
        (browser/tab-route (str url1 "/" url2 "/" url3) request api/+public+))
   (ANY "/m" []

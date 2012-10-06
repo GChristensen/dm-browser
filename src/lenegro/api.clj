@@ -13,7 +13,7 @@
   (:use clojure.tools.macro
         [appengine-magic.services.url-fetch :only [fetch]]))
 
-(def +production+ true)
+(def +production+ true) ; js is advanced-compiled
 (def +restricted+ nil)
 (def +standalone+ (boolean (find-ns 'lispx)))
 (def +carnival+ nil)

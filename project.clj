@@ -6,5 +6,5 @@
                  [enlive "1.0.0"]
                  [clj-http "0.3.2"]
                  [clj-time "0.3.3"]]
-  :aot [lenegro.app_servlet]
+;  :aot [lenegro.app_servlet]
   :dev-dependencies [[appengine-magic "0.4.6-SNAPSHOT"]])
