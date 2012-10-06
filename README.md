@@ -43,20 +43,8 @@ The complete list of implemented concepts could be found in the
 
 * Unicode-enabled fonts
 * A [GAE](http://appspot.com) account or Java 1.6+ [the application could be run on a GAE 
-  account (multiuser mode) or using the local GAE emulation (single user only)]
-
-#### Usage
-
-* The easiest way is to install the [Dark Matter Suite](https://sites.google.com/site/dmbrowser/)
-  which includes a standalone Dark Matter server, Firefox browser and some useful addons and userscripts.
-
-* It's also possible to use an [App Engine](http://appspot.com) based or a standalone instance of 
-  Dark Matter with any browser (through its default crossbrowser web client).
-  You need to know how to install applications at GAE to build and install the application from source 
-  (a precompiled war folder for GAE is also [exists](http://dl.dropbox.com/u/47797347/dark-matter-gae-war.7z)).
-
-* The [Darkmatter](https://github.com/downloads/GChristensen/dm-browser/darkmatter.xpi) firefox addon allows to add chan:// URLs support to an existing
-  Firefox instance (it could be used with a standalone or GAE-based Dark Matter instance).
+  account (multiuser mode) or using the local GAE emulation (single user only)], see 
+  [Dark Matter Suite](https://sites.google.com/site/dmbrowser/)
 
 ## License
 

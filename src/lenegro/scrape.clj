@@ -66,14 +66,20 @@
 
 (def ^:dynamic *crossref-map* nil)
 
-(defn check-reflinks [post-id content]
+(defn check-reflinks [post-id content resource]
   (str/replace content #"<a[^>]+(href=[\"'][^'\"]+[\"'])[^>]*>&gt;&gt;(\d+)</a>"
                (fn [match]
                  (let [reply-no (get match 2)
                        refs (when *crossref-map* (@*crossref-map* reply-no))]
                    (when *crossref-map*
                      (dosync (alter *crossref-map* assoc! reply-no (conj refs post-id))))
-                   (str "<a target=\"_blank\" " (get match 1) " "
+                   (str "<a target=\"_blank\" "
+                        (if (:fourchan resource)
+                          (str/replace (get match 1) #"href=\"(\d+)"
+                                       (fn [match]
+                                         (str "href=\"http://" (:forum resource) "/res/" (get match 1))))
+                          (get match 1))
+                        " "
                         "onclick=\"return browser.inline_view_reflink(this)\" "
                         "onmouseover=\"browser.show_popup(event, '" reply-no  "', true)\" "
                         "onmouseout=\"browser.show_popup(event, '" reply-no "', false)\""
@@ -250,7 +256,7 @@
       :thumb (fix-image (:src (:attrs thumb-img)) resource)
       :image (fix-image (:href (:attrs image-link)) resource)
       :image-size (if image-size [(get width-height 1) (get width-height 2)] [0 0])
-      :text (check-reflinks post-id (fix-links (sanitize (get-post-content post-text)) resource)))))
+      :text (check-reflinks post-id (fix-links (sanitize (get-post-content post-text)) resource) resource))))
 
 (defn make-image-headline [thread-id thumb-img image-link image-size resource]
   (let [width-height (when image-size (re-find #"(\d+)[x\u00d7](\d+)" (api/render image-size)))

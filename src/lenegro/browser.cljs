@@ -398,6 +398,10 @@
   (let [tab (. thread-tabs (getSelectedTab))
         resource (.-web_page_ tab)
         thread-line (parent-by-class target "thread-line")
+        posts (if (= posts -2) ; delta
+                (let [delta-posts (child-by-class thread-line "delta-posts")]
+                  (js/__parseInt (aget (.match (.-textContent delta-posts) (js/RegExp "\\d+")) 0)))
+                posts)
         send-resource (if (:chain resource)
                         (let [thread-group (child-by-class (sibling-by-class thread-line "group-line")
                                                            "thread-group")]
@@ -700,7 +704,7 @@
 (defn start-chain [addr]
   (let [match (.match addr (js/RegExp "([^\\[]+)\\[([^\\]]+)\\](.*)"))
         prefix (aget match 1)
-        boards (vec (.split (aget match 2) ","))
+        boards (vec (.split (aget match 2) (js/RegExp "[\\s\\+,]")))
         postfix (aget match 3)
         links (for [board boards]
                        (str prefix (str (. board (trim)) postfix) ":chain"))]
@@ -882,6 +886,7 @@
                <span class=\"gold\">txt</span> - text only (do not display images)<br/>
                <span class=\"gold\">img</span> - show an image stream instead of a thread list (limited
                                                  support)<br/>
+               <span class=\"gold\">sortid</span> - sort threads by id (desc)<br/>
                <span class=\"gold\">rev</span> - reverse (show the oldest threads first)<br/>
                <span class=\"gold\">xpnd</span> - expand all items<br/>
                <span class=\"gold\">wtch</span> - display watch items only<br/>
@@ -890,7 +895,7 @@
                                                           in the <br/>oppost title or message<br/>
                <span class=\"gold\">deep</span> - also search in visible posts
                <br/></br>Chained links allow to simultaneously view multiple boards in one tab,</br>
-               for example: <span class=\"gold\">4chan.org/[a:3p,c,m:2p]:5p</span>
+               for example: <span class=\"gold\">4chan.org/[a:3p+c+m:2p]:5p</span>
                <br/></br>The commands are:<br/><br/>"
 
                (if  (:open settings)

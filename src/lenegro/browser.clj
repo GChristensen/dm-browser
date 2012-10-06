@@ -338,7 +338,10 @@
                 
                 :default (recur (next all) (conj! shown th) watch filtered forgotten))
           (if (and watch-first? threads-on-watch-map)
-            (let [shown (persistent! shown)
+            (let [shown (if (:sortid resource)
+                          (sort-by #(try (Integer/parseInt (:id %)) (catch Exception e 0))
+                                   (if (:rev resource) < >) (persistent! shown))
+                          (persistent! shown))
                   watch (persistent! watch)
                   out-of-scope (filter (fn [[k v]] (not (contains? watch k))) threads-on-watch-map)
                   out-of-scope (map (fn [kv] (let [w (second kv)]
@@ -354,12 +357,16 @@
               [(if wf-enabled? (map #(filter-replies wf-post %) all-threads) all-threads)
                {:shown (count shown) :filtered filtered :forgotten forgotten :watch (count watch)
                 :watch-total (count threads-on-watch)}])
-            (let [shown (persistent! shown)]
+            (let [shown (if (:sortid resource)
+                          (sort-by #(try (Integer/parseInt (:id %)) (catch Exception e 0))
+                                   (if (:rev resource) < >) (persistent! shown))
+                          (persistent! shown))]
               [(if wf-enabled? (map #(filter-replies wf-post %) shown) shown)
                {:shown (count shown) :filtered filtered :forgotten forgotten :watch 0 :watch-total 0}])))))))
 
 (defn transform-replies [thread resource settings]
   (let [force-text? (or (:txt resource) (:force-text settings))
+        _4chan (:fourchan resource)
         replies (if (:wf-enabled settings)
                   (:children (filter-replies (:wf-post-parsed settings) thread))
                   (:children thread))]
@@ -373,7 +380,7 @@
                   [:.reply-no]
                   (do->
                    (set-attr :title (:date rep))
-                   (set-attr :href (str (:link rep) "#" (:id rep)))
+                   (set-attr :href (str (:link rep) "#" (when _4chan "p") (:id rep)))
                    (content (:id rep)))
                   [:.reply-ord]
                   (content (str (:num rep)))
@@ -403,7 +410,8 @@
                   (clone-for [ref (:refs rep)]
                              [root]
                              (do->
-                              (set-attr :href (str (scrape/thread-url (:id thread) resource) "#" ref))
+                              (set-attr :href (str (scrape/thread-url (:id thread) resource) "#"
+                                                   (when _4chan "p") ref))
                               (set-attr :onmouseover (str "browser.show_popup(event, '"
                                                           ref  "', true)"))
                               (set-attr :onmouseout (str "browser.show_popup(event, '"
@@ -429,6 +437,7 @@
     
 (defn format-thread-stream [threads resource]
   (let [settings (:settings resource)
+        _4chan (:fourchan resource)
         lazy-load-ofscp? (:always-calc-delta settings)
         headlines-templ (html-resource (api/get-resource-as-stream "thread-stream.html"))
         force-text? (or (:txt resource) (:force-text settings))
@@ -502,7 +511,14 @@
                         (content (:id th)))
                        [:.delta-link]
                        (when (:onwatch th)
-                         (set-attr :href (str (:link th) "#" (:last-id th))))
+                         (set-attr :href (str (:link th) "#"
+                                              (when _4chan "p")
+                                              (:last-id th))))
+                       [:.iv-delta]
+                       #(when (:onwatch th)
+                          (if (and (:post-delta th) (> (:post-delta th) 0))
+                            %
+                            ((set-attr :style "color: #757575") %)))
                        [:.post-count]
                        (content (str "[" (:omitted th) "]"))
                        [:.thread-title]
@@ -586,6 +602,7 @@
      :forum (str trade "/" (get addr 4))
      :domain (get addr 3)
      :trade trade
+     :fourchan (when (= trade "4chan.org") true)
      :board (get addr 4)
      :prefix (str trade "-" (get addr 4) "-")
      :target (str (or (get addr 1) "http://") (get addr 2))
@@ -596,6 +613,7 @@
                 (if replies (Integer/parseInt replies) 3))
      :txt (when (> (.indexOf url ":txt") 0) true) ; text only headlines
      :img (when (> (.indexOf url ":img") 0) true) ; image stream
+     :sortid (when (> (.indexOf url ":sortid") 0) true) ; sort threads by id
      :rev (when (> (.indexOf url ":rev") 0) true) ; the oldest threads first
      :xpnd (when (> (.indexOf url ":xpnd") 0) true) ; expand all items
      :wtch (when (> (.indexOf url ":wtch") 0) true) ; watch items only
@@ -997,7 +1015,7 @@
           thread-url (first url)
           post (when (seq (second url)) (re-find #"\d+" (second url)))
           thread-key (str "popup-cache-" thread-url)
-          resource (make-resource thread-url)                    
+          resource (make-resource thread-url)
           thread (or (when-let [thread (api/cache-get thread-key)]
                        (if post
                          (when (or (= (:id thread) post) (some #(= (:id %) post) (:children thread)))

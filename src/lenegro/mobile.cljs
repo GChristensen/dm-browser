@@ -16,6 +16,7 @@
    [goog.structs.Map :as goog-map]))
 
 (def settings nil)
+(def active-combo nil)
 
 (defn post-data [url data callback]
   (let [headers (goog.structs.Map.)]
@@ -62,7 +63,7 @@
                                (:menu item))))]
       (.addItem cbx-chan (goog.ui.ComboBoxItem. chan)))
     (.render cbx-chan (dom/getElement "cbx-chan"))
-
+          
     (events/listen cbx-chan
                    goog.ui.Component.EventType/CHANGE
                    (fn [e]

@@ -5,8 +5,7 @@
 	</tr>
 	<tr class="thread-line">
 	  <td class="thread-control">
-		<!--input type="checkbox" class="thread-check"/-->&nbsp;<a class="expand-trigger" 
-															  title="Expand thread">&raquo;</a>
+		&nbsp;<a class="expand-trigger" title="Expand thread">&raquo;</a>
 		<div class="control-buttons">
 		  <p><a class="watch-trigger-disabled" onclick="browser.watch_thread(this)" 
 				title="Watch thread">[~]</a></p>
@@ -27,10 +26,18 @@
 					 onclick="browser.inline_view_thread(this)">&#x274F;</a>
 			<a class="delta-link header-btn" target="_blank" onclick="return browser.inline_view_reflink(this)" 
 			   title="Inline view delta">&#x2206;</a>
-			<a class="iv-trigger-menu header-btn" onclick="browser.iv_show_menu(this)" 
-			   title="Integrated view">++</a>
-			<a class="iv-trigger header-btn" onclick="browser.iv_load_posts(this, 15)" 
-			   title="Integrated view (15)">+</a>
+			<!--a class="iv-trigger-menu header-btn" onclick="browser.iv_show_menu(this)" 
+			   title="Integrated view">++</a-->
+            <div class="iv-border">
+			  <a class="iv-trigger header-btn" onclick="browser.iv_load_posts(this, -1)" 
+			     title="Integrated view (all)">+&#x221e;</a>
+			  <a class="iv-trigger header-btn" onclick="browser.iv_load_posts(this, 50)" 
+			     title="Integrated view (50)">+50</a>
+			  <a class="iv-trigger header-btn" onclick="browser.iv_load_posts(this, 10)" 
+			     title="Integrated view (10)">+10</a>
+			  <a class="iv-trigger iv-delta header-btn" onclick="browser.iv_load_posts(this, -2)" 
+			     title="Integrated view (&#x2206;)">+&#x2206;</a>
+            </div>
 			&nbsp;<span class="post-count" title="Post count"></span>
 			<span class="thread-title"></span>
 		  </div>
