@@ -74,11 +74,15 @@
                    (when *crossref-map*
                      (dosync (alter *crossref-map* assoc! reply-no (conj refs post-id))))
                    (str "<a target=\"_blank\" "
-                        (if (:fourchan resource)
-                          (str/replace (get match 1) #"href=\"(\d+)"
-                                       (fn [match]
-                                         (str "href=\"http://" (:forum resource) "/res/" (get match 1))))
-                          (get match 1))
+                        (cond
+                         (:fourchan resource)
+                         (str/replace (get match 1) #"href=\"(\d+)"
+                                      (fn [match]
+                                        (str "href=\"http://" (:forum resource) "/res/" (get match 1))))
+                         (:kraut resource)
+                         (str/replace (get match 1) #"href=\""
+                                      (str "href=\"http://" (:trade resource)))
+                         :else (get match 1))
                         " "
                         "onclick=\"return browser.inline_view_reflink(this)\" "
                         "onmouseover=\"browser.show_popup(event, '" reply-no  "', true)\" "
@@ -271,7 +275,7 @@
 
 (defn make-error-headline [message n resource]
   (struct-map headline
-    :id "error"
+    :id "0"
     :internal-id (str (:prefix resource) n "-error")
     :title "Error"
     :text message))
@@ -418,9 +422,13 @@
         image-link (first (select root-node [:a.fileThumb]))
         thumb-img  (first (select image-link [:img]))
         filesize (first (select root-node [:.fileText]))
-        post-text (first (select root-node [root :> :.post :> :blockquote]))]
-    (make-headline thread-id parent-id num date title-elt thumb-img image-link filesize post-text
-                          resource)))
+        post-text (first (select root-node [root :> :.post :> :blockquote]))
+        ball-elt (first (select root-node [root :.countryFlag]))
+        ball [(fix-url (:src (:attrs ball-elt)) resource)
+              (:title (:attrs ball-elt))]]
+    (assoc (make-headline thread-id parent-id num date title-elt thumb-img image-link filesize post-text
+                          resource)
+      :ball ball)))
 
 (defmethod scrape-threads "4chan.org" [doc-tree resource]
   (scrape-structured (select doc-tree [:div.board :> :div.thread])

@@ -22,6 +22,7 @@
 (ds/defentity WatchItem [^:key item-id prefix board user-token ^:clj oppost delta-count last-id timestamp])
 (ds/defentity ArcItem [^:key item-id board user-token ^:clj oppost page ^:clj images
                        rate last-modified timestamp])
+(ds/defentity NewestThread [^:key board id])
 
 (ds/defentity Visitor [identity referer timestamp])
 
@@ -339,8 +340,11 @@
                 :default (recur (next all) (conj! shown th) watch filtered forgotten))
           (if (and watch-first? threads-on-watch-map)
             (let [shown (if (:sortid resource)
-                          (sort-by #(try (Integer/parseInt (:id %)) (catch Exception e 0))
-                                   (if (:rev resource) < >) (persistent! shown))
+                          (let [sorted-threads
+                                (sort-by #(try (Integer/parseInt (:id %)) (catch Exception e 0))
+                                         (if (:rev resource) < >) (persistent! shown))]
+                            ;;;
+                            sorted-threads)
                           (persistent! shown))
                   watch (persistent! watch)
                   out-of-scope (filter (fn [[k v]] (not (contains? watch k))) threads-on-watch-map)
@@ -438,6 +442,21 @@
 (defn format-thread-stream [threads resource]
   (let [settings (:settings resource)
         _4chan (:fourchan resource)
+        sortid (ref (:sortid resource))
+        user-token (api/get-user-token)
+        board-id (str (:prefix resource) user-token)
+        prev-newest-thread (when @sortid
+                             (let [ids (:id (ds/retrieve NewestThread board-id))
+                                   id1 (first ids)
+                                   id (if (some #(= id1 (:id %)) threads)
+                                        id1
+                                        (second ids))
+                                   new-id (:id (some #(when (not (:onwatch %)) %) threads))
+                                   new-id2 (:id (first (next (drop-while #(not= new-id (:id %)) threads))))]
+                               (ds/save! (NewestThread. board-id [new-id new-id2]))
+                               (if (or (= id new-id) (nil? id))
+                                 0
+                                 (Integer/parseInt id))))
         lazy-load-ofscp? (:always-calc-delta settings)
         headlines-templ (html-resource (api/get-resource-as-stream "thread-stream.html"))
         force-text? (or (:txt resource) (:force-text settings))
@@ -450,7 +469,8 @@
             [:.thread-line]
             (clone-for [th threads]
                        [root]
-                       #(if (:onwatch th) ((set-attr :onwatch "onwatch") %) %)
+                       #(cond (:onwatch th) ((set-attr :onwatch "onwatch") %)
+                              :else %)
                        [:.expand-trigger]
                        (set-attr :onclick (str "browser.expand_thread(\""
                                                (:internal-id th)
@@ -489,16 +509,22 @@
                            node))
                        [:.thread-control]
                        (fn [node]
-                         (if (:onwatch th)
-                           ((set-attr :class "thread-control onwatch") node)
-                           node))
+                         (cond (:onwatch th)
+                               ((set-attr :class "thread-control onwatch") node)
+                               (and @sortid (<= (Integer/parseInt (:id th)) prev-newest-thread))
+                               ((set-attr :class "thread-control read") node)
+                               :else node))
                        [:.thread-oppost]
                        (do->
                         (set-attr :id (:internal-id th))
                         (fn [node]
-                          (if (:onwatch th)
-                            ((set-attr :class "thread-oppost onwatch") node)
-                            node)))
+                          (cond (:onwatch th)
+                                ((set-attr :class "thread-oppost onwatch") node)
+                                (and @sortid (<= (Integer/parseInt (:id th)) prev-newest-thread))
+                                (do
+                                 (dosync (ref-set sortid nil))
+                                 ((set-attr :class "thread-oppost read") node))
+                                :else node)))
                        [:.ball]
                        #(when (:ball th)
                           ((do->
@@ -589,7 +615,8 @@
 (defn make-resource [url]
   (let [url (if (contains? all-commands (str/trim url))
               (str "self.ref/" url)
-              (str/replace url "iichan.ru" "iichan.hk"))
+              (str/replace (str/replace url "iichan.ru" "iichan.hk")
+                           "2ch.so" "2ch.hk"))
         addr (re-find #"(https?\://)?(([^/]+)/([a-zA-Z0-9]+))" (api/sanitize url))
         trade (if addr (re-find #"[^.]+\.[^.]+$" (get addr 3)) url)
         pages (get (re-find #":(\d+)p" url) 1)
@@ -603,6 +630,7 @@
      :domain (get addr 3)
      :trade trade
      :fourchan (when (= trade "4chan.org") true)
+     :kraut (when (= trade "krautchan.net") true)
      :board (get addr 4)
      :prefix (str trade "-" (get addr 4) "-")
      :target (str (or (get addr 1) "http://") (get addr 2))
@@ -935,7 +963,7 @@
                                         (str "/archive/" internal-id "/" (str/replace tail "/" "-"))))]
               (ds/save! (WatchItem. item-id (:prefix resource) (:forum resource) user-token oppost 
                                     (:omitted oppost) (:last-id oppost) (api/timestamp)))
-              (when (not (:archive-disable settings))
+              (when (not (or api/+restricted+ (:archive-disable settings)))
                 (when (not (ds/exists? ArcItem item-id))
                   (let [oppost (assoc oppost
                                  :link (str "/archive/" internal-id)

@@ -486,6 +486,12 @@ table.thread-stream, table#thread-stream
 	border-color: #698CC0 !important;
 }
 
+.read
+{
+    border-top: 2px solid red;
+	border-top-color: red !important;
+}
+
 .post-image
 {
 	padding: 4px 0;

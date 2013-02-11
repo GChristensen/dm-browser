@@ -4,6 +4,10 @@
 
 ### Yo dawg, we heard you like browsers, so we put a browser into your browser so you can browse while you browse.
 
+#[DEPRECATED]
+
+See the [Dark Flow](https://github.com/GChristensen/dark-flow) addon.
+
 __Dark Matter__, a spin-off of the
 [feedxcavator](https://github.com/GChristensen/feedxcavator#readme) project,
 is a prototype of a middleware for the boosted paginated
