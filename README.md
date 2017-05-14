@@ -4,7 +4,7 @@
 
 ### Yo dawg, we heard you like browsers, so we put a browser into your browser so you can browse while you browse.
 
-#DEPRECATED
+# [DEPRECATED]
 
 See the [Dark Flow](https://github.com/GChristensen/dark-flow) addon.
 
