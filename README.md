@@ -11,7 +11,7 @@ See the [Dark Flow](https://github.com/GChristensen/dark-flow) addon.
 __Dark Matter__, a spin-off of the
 [feedxcavator](https://github.com/GChristensen/feedxcavator#readme) project.
 
-That's how it used to look like: [youtube](https://youtu.be/TeAGkIjRn7s?t=36)
+That's how it used to look like: [youtube](https://youtu.be/TeAGkIjRn7s?t=36&autoplay=1)
 
 Paginated forums (imageboards are the most ubiquity species nowadays) are not so
 convenient to browse as is, especialy highly loaded ones. This application allows to
